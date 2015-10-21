@@ -1,9 +1,11 @@
 package com.shadow3x3x3.pathbycar_yi;
 
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -18,7 +20,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 
-public class LocationService extends IntentService implements
+public class LocationService extends Service implements
     ConnectionCallbacks, OnConnectionFailedListener {
 
   protected static final String TAG = "Service-location";
@@ -45,10 +47,6 @@ public class LocationService extends IntentService implements
     }
   } // LocationListener class end
 
-  public LocationService() {
-    super("LocationService");
-  }
-
   @Override
   public void onCreate(){
     Log.e(TAG, "onCreate");
@@ -63,12 +61,6 @@ public class LocationService extends IntentService implements
     super.onStartCommand(intent, flags, starId);
     serviceLocationListener = new ServiceLocationListener();
     mGoogleApiClient.connect();
-    return  START_STICKY;
-  }
-
-  @Override
-  protected void onHandleIntent(Intent intent) {
-    Log.e(TAG, "onHandleIntent");
     if (!mRequestingLocationUpdates) {
       mRequestingLocationUpdates = true;
       if (!mGoogleApiClient.isConnected()){
@@ -78,7 +70,13 @@ public class LocationService extends IntentService implements
       }
 
     }
+    return  START_STICKY;
+  }
 
+  @Nullable
+  @Override
+  public IBinder onBind(Intent intent) {
+    return null;
   }
 
   protected synchronized void buildGoogleApiClient() {
@@ -125,4 +123,10 @@ public class LocationService extends IntentService implements
 
   }
 
+  @Override
+  public void onDestroy(){
+    LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, serviceLocationListener);
+    Log.d(TAG, "onDestroy");
+    super.onDestroy();
+  }
 }

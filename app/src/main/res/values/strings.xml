@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">PathByCar</string>
+
+  <string name="latitude_label">經度</string>
+  <string name="longitude_label">緯度</string>
+  <string name="last_update_time_label">Last location update time</string>
+
+  <string name="start_updates">Start updates</string>
+  <string name="stop_updates">Stop updates</string>
+  <string name="location_updated_message">Location updated</string>
+</resources>

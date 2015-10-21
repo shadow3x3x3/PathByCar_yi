@@ -23,9 +23,6 @@ public class LocationService extends IntentService implements
 
   protected static final String TAG = "Service-location";
 
-  public static final int START_LOCATION_UPDATES = 0;
-  public static final int STOP_LOCATION_UPDATES  = 1;
-
   public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
   public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
       UPDATE_INTERVAL_IN_MILLISECONDS / 2;
@@ -126,13 +123,6 @@ public class LocationService extends IntentService implements
   @Override
   public void onConnectionFailed(ConnectionResult connectionResult) {
 
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    Log.e(TAG, "onDestroy");
-    LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, serviceLocationListener);
   }
 
 }

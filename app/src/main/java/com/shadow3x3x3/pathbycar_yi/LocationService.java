@@ -1,11 +1,13 @@
 package com.shadow3x3x3.pathbycar_yi;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -32,6 +34,9 @@ public class LocationService extends Service implements
   protected GoogleApiClient mGoogleApiClient;
   protected LocationRequest mLocationRequest;
   protected Location mCurrentLocation;
+  protected TelephonyManager telephonyManager;
+
+  protected String device_imei;
 
   protected String mLastUpdateTime;
   protected Boolean mRequestingLocationUpdates;
@@ -51,6 +56,8 @@ public class LocationService extends Service implements
   public void onCreate(){
     Log.e(TAG, "onCreate");
     super.onCreate();
+    telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+    device_imei = telephonyManager.getDeviceId();
     buildGoogleApiClient();
     mRequestingLocationUpdates = false;
   }

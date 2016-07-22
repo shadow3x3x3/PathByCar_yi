@@ -1,4 +1,4 @@
-package com.shadow3x3x3.pathbycar_yi;
+package com.shadow3x3x3.pathbycar_yi.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -18,6 +18,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -40,12 +42,16 @@ public class LocationService extends Service implements
 
     protected ServiceLocationListener serviceLocationListener;
 
+    private URI uri;
+    protected LocationWebSocket locationWebSocket;
+
     protected class ServiceLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(Location location) {
             mCurrentLocation = location;
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             Log.d(TAG, String.valueOf(mCurrentLocation.getLongitude()) + ", " + String.valueOf(mCurrentLocation.getLatitude()));
+            locationWebSocket.send(String.valueOf(mCurrentLocation.getLongitude()) + ", " + String.valueOf(mCurrentLocation.getLatitude()));
         }
     } // LocationListener class end
 
@@ -54,6 +60,9 @@ public class LocationService extends Service implements
         Log.e(TAG, "onCreate");
         super.onCreate();
         buildGoogleApiClient();
+        setUri();
+        locationWebSocket = new LocationWebSocket(uri);
+        locationWebSocket.connect();
         mRequestingLocationUpdates = false;
     }
 
@@ -142,6 +151,14 @@ public class LocationService extends Service implements
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, serviceLocationListener);
         Log.d(TAG, "onDestroy");
         super.onDestroy();
+    }
+
+    private void setUri(){
+        try {
+            uri = new URI("ws://140.134.26.68:4567/");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
 }

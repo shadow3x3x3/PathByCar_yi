@@ -18,24 +18,25 @@ package com.shadow3x3x3.pathbycar_yi;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+
+import com.shadow3x3x3.pathbycar_yi.service.LocationService;
+import com.shadow3x3x3.pathbycar_yi.service.LocationWebSocket;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 public class MainActivity extends Activity {
+    protected LocationWebSocket locationWebSocket;
+
     protected Button mStartUpdatesButton;
     protected Button mStopUpdatesButton;
-    protected TextView mLastUpdateTimeTextView;
-    protected TextView mLatitudeTextView;
-    protected TextView mLongitudeTextView;
 
-    protected String mLatitudeLabel;
-    protected String mLongitudeLabel;
-    protected String mLastUpdateTimeLabel;
     protected Boolean mRequestingLocationUpdates;
-    protected String mLastUpdateTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,16 +45,14 @@ public class MainActivity extends Activity {
 
         mStartUpdatesButton     = (Button) findViewById(R.id.start_updates_button);
         mStopUpdatesButton      = (Button) findViewById(R.id.stop_updates_button);
-        mLatitudeTextView       = (TextView) findViewById(R.id.latitude_text);
-        mLongitudeTextView      = (TextView) findViewById(R.id.longitude_text);
-        mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
-
-        mLatitudeLabel       = getResources().getString(R.string.latitude_label);
-        mLongitudeLabel      = getResources().getString(R.string.longitude_label);
-        mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
 
         mRequestingLocationUpdates = false;
-        mLastUpdateTime = "";
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 
     /**
@@ -65,7 +64,6 @@ public class MainActivity extends Activity {
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
             setButtonsEnabledState();
-
         }
     }
 
@@ -78,6 +76,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void sendToWebsocket(View view) {
+
+    }
+
     private void setButtonsEnabledState() {
         if (mRequestingLocationUpdates) {
             mStartUpdatesButton.setEnabled(false);
@@ -87,5 +89,7 @@ public class MainActivity extends Activity {
             mStopUpdatesButton.setEnabled(false);
         }
     }
+
+
 
 }

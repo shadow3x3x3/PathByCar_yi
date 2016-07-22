@@ -149,6 +149,7 @@ public class LocationService extends Service implements
     @Override
     public void onDestroy(){
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, serviceLocationListener);
+        locationWebSocket.close();
         Log.d(TAG, "onDestroy");
         super.onDestroy();
     }

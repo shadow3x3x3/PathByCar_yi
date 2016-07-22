@@ -20,8 +20,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.google.android.gms:play-services:9.2.1'
+    compile files('lib/autobahn-0.5.0.jar')
+    compile files('lib/jackson-core-asl-1.9.7.jar')
+    compile files('lib/jackson-mapper-asl-1.9.7.jar')
 }

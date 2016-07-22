@@ -25,67 +25,67 @@ import android.widget.TextView;
 
 
 public class MainActivity extends Activity {
-  protected Button mStartUpdatesButton;
-  protected Button mStopUpdatesButton;
-  protected TextView mLastUpdateTimeTextView;
-  protected TextView mLatitudeTextView;
-  protected TextView mLongitudeTextView;
+    protected Button mStartUpdatesButton;
+    protected Button mStopUpdatesButton;
+    protected TextView mLastUpdateTimeTextView;
+    protected TextView mLatitudeTextView;
+    protected TextView mLongitudeTextView;
 
-  protected String mLatitudeLabel;
-  protected String mLongitudeLabel;
-  protected String mLastUpdateTimeLabel;
-  protected Boolean mRequestingLocationUpdates;
-  protected String mLastUpdateTime;
+    protected String mLatitudeLabel;
+    protected String mLongitudeLabel;
+    protected String mLastUpdateTimeLabel;
+    protected Boolean mRequestingLocationUpdates;
+    protected String mLastUpdateTime;
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-    mStartUpdatesButton     = (Button) findViewById(R.id.start_updates_button);
-    mStopUpdatesButton      = (Button) findViewById(R.id.stop_updates_button);
-    mLatitudeTextView       = (TextView) findViewById(R.id.latitude_text);
-    mLongitudeTextView      = (TextView) findViewById(R.id.longitude_text);
-    mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
+        mStartUpdatesButton     = (Button) findViewById(R.id.start_updates_button);
+        mStopUpdatesButton      = (Button) findViewById(R.id.stop_updates_button);
+        mLatitudeTextView       = (TextView) findViewById(R.id.latitude_text);
+        mLongitudeTextView      = (TextView) findViewById(R.id.longitude_text);
+        mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
 
-    mLatitudeLabel       = getResources().getString(R.string.latitude_label);
-    mLongitudeLabel      = getResources().getString(R.string.longitude_label);
-    mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
+        mLatitudeLabel       = getResources().getString(R.string.latitude_label);
+        mLongitudeLabel      = getResources().getString(R.string.longitude_label);
+        mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
 
-    mRequestingLocationUpdates = false;
-    mLastUpdateTime = "";
-  }
-
-  /**
-   Button actions
-   **/
-  public void startUpdatesButtonHandler(View view) {
-    Intent intent = new Intent(this, LocationService.class);
-    startService(intent);
-    if (!mRequestingLocationUpdates) {
-      mRequestingLocationUpdates = true;
-      setButtonsEnabledState();
-
+        mRequestingLocationUpdates = false;
+        mLastUpdateTime = "";
     }
-  }
 
-  public void stopUpdatesButtonHandler(View view) {
-    Intent intent = new Intent(this, LocationService.class);
-    stopService(intent);
-    if (mRequestingLocationUpdates) {
-      mRequestingLocationUpdates = false;
-      setButtonsEnabledState();
-    }
-  }
+    /**
+     Button actions
+     **/
+    public void startUpdatesButtonHandler(View view) {
+        Intent intent = new Intent(this, LocationService.class);
+        startService(intent);
+        if (!mRequestingLocationUpdates) {
+            mRequestingLocationUpdates = true;
+            setButtonsEnabledState();
 
-  private void setButtonsEnabledState() {
-    if (mRequestingLocationUpdates) {
-      mStartUpdatesButton.setEnabled(false);
-      mStopUpdatesButton.setEnabled(true);
-    } else {
-      mStartUpdatesButton.setEnabled(true);
-      mStopUpdatesButton.setEnabled(false);
+        }
     }
-  }
+
+    public void stopUpdatesButtonHandler(View view) {
+        Intent intent = new Intent(this, LocationService.class);
+        stopService(intent);
+        if (mRequestingLocationUpdates) {
+            mRequestingLocationUpdates = false;
+            setButtonsEnabledState();
+        }
+    }
+
+    private void setButtonsEnabledState() {
+        if (mRequestingLocationUpdates) {
+            mStartUpdatesButton.setEnabled(false);
+            mStopUpdatesButton.setEnabled(true);
+        } else {
+            mStartUpdatesButton.setEnabled(true);
+            mStopUpdatesButton.setEnabled(false);
+        }
+    }
 
 }

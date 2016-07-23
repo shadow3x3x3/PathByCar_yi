@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -17,6 +18,8 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,21 +32,20 @@ public class LocationService extends Service implements
 
     protected static final String TAG = "Service-location";
 
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
-    protected GoogleApiClient mGoogleApiClient;
-    protected LocationRequest mLocationRequest;
-    protected Location mCurrentLocation;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private Location mCurrentLocation;
+    private String mLastUpdateTime;
 
-    protected String mLastUpdateTime;
-    protected Boolean mRequestingLocationUpdates;
-
-    protected ServiceLocationListener serviceLocationListener;
+    private Boolean mRequestingLocationUpdates;
+    private ServiceLocationListener serviceLocationListener;
 
     private URI uri;
-    protected LocationWebSocket locationWebSocket;
+    private LocationWebSocket locationWebSocket;
 
     protected class ServiceLocationListener implements LocationListener {
         @Override
@@ -51,25 +53,39 @@ public class LocationService extends Service implements
             mCurrentLocation = location;
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             Log.d(TAG, String.valueOf(mCurrentLocation.getLongitude()) + ", " + String.valueOf(mCurrentLocation.getLatitude()));
-            locationWebSocket.send(String.valueOf(mCurrentLocation.getLongitude()) + ", " + String.valueOf(mCurrentLocation.getLatitude()));
+            sendLocation(String.valueOf(mCurrentLocation.getLongitude()) +
+                    ", " +
+                    String.valueOf(mCurrentLocation.getLatitude()),
+                    mLastUpdateTime);
         }
+
+        private void sendLocation(String location, String date) {
+            try {
+                locationWebSocket.send(location + " on " + date);
+            } catch(WebsocketNotConnectedException e) {
+                Log.d(TAG, e.toString());
+            }
+        }
+
     } // LocationListener class end
 
     @Override
     public void onCreate() {
         Log.e(TAG, "onCreate");
+        
         super.onCreate();
         buildGoogleApiClient();
+        mRequestingLocationUpdates = false;
         setUri();
         locationWebSocket = new LocationWebSocket(uri);
         locationWebSocket.connect();
-        mRequestingLocationUpdates = false;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int starId) {
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, starId);
+
         serviceLocationListener = new ServiceLocationListener();
         mGoogleApiClient.connect();
         if (!mRequestingLocationUpdates) {
@@ -81,6 +97,8 @@ public class LocationService extends Service implements
             }
 
         }
+
+
         return START_STICKY;
     }
 
@@ -148,10 +166,10 @@ public class LocationService extends Service implements
 
     @Override
     public void onDestroy(){
+        super.onDestroy();
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, serviceLocationListener);
         locationWebSocket.close();
         Log.d(TAG, "onDestroy");
-        super.onDestroy();
     }
 
     private void setUri(){

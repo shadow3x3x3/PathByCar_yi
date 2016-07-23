@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -44,6 +43,8 @@ public class LocationService extends Service implements
     private Boolean mRequestingLocationUpdates;
     private ServiceLocationListener serviceLocationListener;
 
+    private String recognitionName = "NOT_SETTING";
+
     private URI uri;
     private LocationWebSocket locationWebSocket;
 
@@ -61,7 +62,7 @@ public class LocationService extends Service implements
 
         private void sendLocation(String location, String date) {
             try {
-                locationWebSocket.send(location + " on " + date);
+                locationWebSocket.send(recognitionName + ": " + location + " on " + date);
             } catch(WebsocketNotConnectedException e) {
                 Log.d(TAG, e.toString());
             }
@@ -72,8 +73,8 @@ public class LocationService extends Service implements
     @Override
     public void onCreate() {
         Log.e(TAG, "onCreate");
-        
         super.onCreate();
+
         buildGoogleApiClient();
         mRequestingLocationUpdates = false;
         setUri();
@@ -86,6 +87,10 @@ public class LocationService extends Service implements
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, starId);
 
+        if(intent != null) {
+            recognitionName = intent.getStringExtra("recognitionName");
+        }
+
         serviceLocationListener = new ServiceLocationListener();
         mGoogleApiClient.connect();
         if (!mRequestingLocationUpdates) {
@@ -97,8 +102,6 @@ public class LocationService extends Service implements
             }
 
         }
-
-
         return START_STICKY;
     }
 
@@ -179,5 +182,4 @@ public class LocationService extends Service implements
             e.printStackTrace();
         }
     }
-
 }

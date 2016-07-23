@@ -18,35 +18,27 @@ package com.shadow3x3x3.pathbycar_yi;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.shadow3x3x3.pathbycar_yi.service.LocationService;
-import com.shadow3x3x3.pathbycar_yi.service.LocationWebSocket;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
 
 public class MainActivity extends Activity {
-    protected LocationWebSocket locationWebSocket;
+    private Button startUpdatesButton;
+    private Button stopUpdatesButton;
 
-    protected Button mStartUpdatesButton;
-    protected Button mStopUpdatesButton;
-
-    protected Boolean mRequestingLocationUpdates;
-
+    private Boolean requestingLocationUpdates;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mStartUpdatesButton     = (Button) findViewById(R.id.start_updates_button);
-        mStopUpdatesButton      = (Button) findViewById(R.id.stop_updates_button);
+        startUpdatesButton = (Button) findViewById(R.id.start_updates_button);
+        stopUpdatesButton  = (Button) findViewById(R.id.stop_updates_button);
 
-        mRequestingLocationUpdates = false;
+        requestingLocationUpdates = false;
     }
 
     @Override
@@ -56,13 +48,13 @@ public class MainActivity extends Activity {
     }
 
     /**
-     Button actions
+     Button Actions
      **/
     public void startUpdatesButtonHandler(View view) {
         Intent intent = new Intent(this, LocationService.class);
         startService(intent);
-        if (!mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = true;
+        if (!requestingLocationUpdates) {
+            requestingLocationUpdates = true;
             setButtonsEnabledState();
         }
     }
@@ -70,26 +62,19 @@ public class MainActivity extends Activity {
     public void stopUpdatesButtonHandler(View view) {
         Intent intent = new Intent(this, LocationService.class);
         stopService(intent);
-        if (mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = false;
+        if (requestingLocationUpdates) {
+            requestingLocationUpdates = false;
             setButtonsEnabledState();
         }
     }
 
-    public void sendToWebsocket(View view) {
-
-    }
-
     private void setButtonsEnabledState() {
-        if (mRequestingLocationUpdates) {
-            mStartUpdatesButton.setEnabled(false);
-            mStopUpdatesButton.setEnabled(true);
+        if (requestingLocationUpdates) {
+             startUpdatesButton.setEnabled(false);
+            stopUpdatesButton.setEnabled(true);
         } else {
-            mStartUpdatesButton.setEnabled(true);
-            mStopUpdatesButton.setEnabled(false);
+             startUpdatesButton.setEnabled(true);
+            stopUpdatesButton.setEnabled(false);
         }
     }
-
-
-
 }

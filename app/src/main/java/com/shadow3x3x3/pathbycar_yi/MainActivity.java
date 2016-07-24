@@ -68,23 +68,22 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, LocationService.class);
         intent.putExtra("recognitionName", recognitionEditText.getText().toString());
         startService(intent);
-        if (!requestingLocationUpdates) {
-            requestingLocationUpdates = true;
-            setButtonsEnabledState();
-        }
+        updateButton();
     }
 
     public void stopUpdatesButtonHandler(View view) {
         Intent intent = new Intent(this, LocationService.class);
         stopService(intent);
-        if (requestingLocationUpdates) {
-            requestingLocationUpdates = false;
-            setButtonsEnabledState();
-        }
+        updateButton();
     }
 
-    private void setButtonsEnabledState() {
-        if (requestingLocationUpdates) {
+    private void updateButton() {
+        requestingLocationUpdates = !requestingLocationUpdates;
+        setButtonsEnabledState(requestingLocationUpdates);
+    }
+
+    private void setButtonsEnabledState(boolean isStart) {
+        if (isStart) {
             startUpdatesButton.setEnabled(false);
             recognitionEditText.setEnabled(false);
             stopUpdatesButton.setEnabled(true);
